@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="xlsx.full.min.js"></script>
+<script>
+	window.onload = function(){
+		// init2();
+ 		P.ShowControls = false;
+	}
+
+	function upload() {
+	  var filename = document.getElementById("importFile").value;
+	  // 这时的filename不是 importFile 框中的值
+
+	  // P.SourceLink = filename
+	    P.FileName = filename;
+	  // P.URL = filename
+	}
+
+	
+	var videoList = [];
+
+
+	function countProperties(obj){
+	　　var count = 0;
+	    for(var key in obj){
+	        if(obj.hasOwnProperty(key)){
+	            count++;
+	        }
+	    }
+	    return count;
+	}
+
+	function testCallNet(){
+		var listStr =  window.external.selectFolder('javascript访问C#代码');
+		//var listStr = '["D://avi_player//Camera0_180809091500.avi","D://avi_player//video//19_kotlin的loop和Range.avi","D://avi_player//video//22_kotlin默认参数和具名参数.avi","D://avi_player//video//test1//21_kotlin函数和函数式表达式.avi"]';
+		alert(listStr);
+		videoList = eval(listStr);
+        var str = listStr + '<br/><br/><br/>';
+	
+		calVideoLength(videoList);
+		
+		var r1 = document.getElementById('r1');
+		
+		var xxx = setInterval(function(){
+			var len = countProperties(videoLength);
+			if(len === videoList.length){
+				for(var key in videoLength){
+					var value = videoLength[key];
+					str += key + ':'+ value + '</br/>';
+				}
+				r1.innerHTML = str;
+				var c= document.getElementById('c');
+				c.innerHTML = '';
+				clearInterval(xxx);
+			}
+		},200);
+
+		
+	}
+	
+	var videoLength = {};
+	
+	function calVideoLength(videoList){
+		var i=0;
+		function getVP(videoPath){
+			var temp = '<object id="PP" name="PP" height="500" type="video/x-ms-wmv" width="500">'+
+			'<param name="filename" value="'+videoPath+'" />'+
+			'<param name="autostart" value="true" />'+
+			'<param name="loop" value="true"/>'+
+			'<param name="SendPlayStateChangeEvents" value="true">'+
+			'<param name="SendKeyboardEvents" value="true">'+
+			'<param name="SendMouseClickEvents" value="true">'+
+			'<param name="SendOpenStateChangeEvents" value="true">'+
+			'<param name="SendWarningEvents" value="true">'+
+			'</object>';
+			var c= document.getElementById('c');
+			c.innerHTML = temp;
+			
+			var PP = document.getElementById('PP');
+			PP.attachEvent('OpenStateChange',function (){
+				if(P.playState === 2){
+					videoLength[videoPath]= PP.SelectionEnd;
+					c.innerHTML = '';
+					if(i<videoList.length){
+						getVP(videoList[i++])
+					}
+				}
+			});
+		}
+		
+		getVP(videoList[i]);
+	 
+	}
+ 
+ /*
+ 	var i =1;
+ 	P.attachEvent('OpenStateChange',function (){
+ 		
+ 		if(i<videoList.length+1){
+ 			var r1 = document.getElementById('r1');
+ 			var str = r1.innerHTML;
+			if(P.playState === 3){
+				var video = videoList[i];
+				str += video + ":" + P.SelectionEnd  +"<br/>";
+				r1.innerHTML = str;
+
+				alert(video)
+				P.stop();
+				P.FileName = video;
+				i++;
+			}
+		}
+
+	});*/
+ 
+ 
+    /*
+    FileReader共有4种读取方法：
+    1.readAsArrayBuffer(file)：将文件读取为ArrayBuffer。
+    2.readAsBinaryString(file)：将文件读取为二进制字符串
+    3.readAsDataURL(file)：将文件读取为Data URL
+    4.readAsText(file, [encoding])：将文件读取为文本，encoding缺省值为'UTF-8'
+                 */
+    var wb;//读取完成的数据
+    var rABS = false; //是否将文件读取为二进制字符串
+
+    function importExcel(obj) {//导入
+        if(!obj.files) {
+            return;
+        }
+        //var IMPORTFILE_MAXSIZE = 1*1024;//这里可以自定义控制导入文件大小
+        var suffix = obj.files[0].name.split(".")[1]
+        if(suffix != 'xls' && suffix !='xlsx'){
+            alert('导入的文件格式不正确!')
+            return
+        }
+        //if(obj.files[0].size/1024 > IMPORTFILE_MAXSIZE){
+          //  alert('导入的表格文件不能大于1M')
+          //  return
+        //}
+        var f = obj.files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var data = e.target.result;
+            if(rABS) {
+                wb = XLSX.read(btoa(fixdata(data)), {//手动转化
+                    type: 'base64'
+                });
+            } else {
+                wb = XLSX.read(data, {
+                    type: 'binary'
+                });
+            }
+            //wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
+            //wb.Sheets[Sheet名]获取第一个Sheet的数据
+            document.getElementById("demo").innerHTML= JSON.stringify( XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]) );
+        };
+        if(rABS) {
+            reader.readAsArrayBuffer(f);
+        } else {
+            reader.readAsBinaryString(f);
+        }
+    }
+
+    function fixdata(data) { //文件流转BinaryString
+        var o = "",
+            l = 0,
+            w = 10240;
+        for(; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+        o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+        return o;
+    }
+
+</script>
+<style rel="stylesheet" type="text/css">
+.route{
+	transform:rotate(90deg);
+	-ms-transform:rotate(90deg); /* Internet Explorer */
+	-moz-transform:rotate(90deg); /* Firefox */
+	-webkit-transform:rotate(90deg); /* Safari 和 Chrome */
+	-o-transform:rotate(90deg); /* Opera */
+}
+</style>
+</head>
+<body>
+
+<div id="c" style="display:none;">
+</div>
+
+<div class="route">
+<object id="P" name="P" height="500" type="video/x-ms-wmv" width="500" onclick="alert(1);">
+    <param name="filename" value="D:\avi_player\Camera0_180807183105.avi" />
+    <param name="autostart" value="true" />
+    <param name="loop" value="true"/>
+    <param name="SendPlayStateChangeEvents" value="true">
+    <param name="SendKeyboardEvents" value="true">
+    <param name="SendMouseClickEvents" value="true">
+    <param name="SendOpenStateChangeEvents" value="true">
+    <param name="SendWarningEvents" value="true">
+</object>
+</div>
+<input type="file" webkitdirectory directory id="importFile" />
+  <input type="button" onclick="upload()" name="xx"/>
+  <button onclick="testCallNet();" >call c#
+  </button>
+
+  <p id="r1">
+  </p>
+  <input type="file" onchange="importExcel(this);" />
+	<div id="demo"></div>
+
+</body>
+</html>
+ 

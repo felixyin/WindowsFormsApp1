@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="test2.html" />
+    <Content Include="test4.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

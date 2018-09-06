@@ -8,17 +8,19 @@ using System.ComponentModel;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
-namespace WindowsFormsApp1
+namespace felixyin
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             // FIXME 生产环境，需要修改为4404
             string url = "http://localhost:4404";
             int bv = GetBrowserVersion();
-            if(bv >= 8)
+            if (bv >= 8)// 浏览器版本不能小于8
             {
                 bool isOk = ResponseOk(url);
                 if (isOk)
@@ -46,7 +48,6 @@ namespace WindowsFormsApp1
                 }
             }
 
-
         }
 
         /// <summary>   
@@ -67,115 +68,6 @@ namespace WindowsFormsApp1
                 return false;
             }
 
-        }
-
-
-        public void FindFile1(List<String> list, string sSourcePath)
-        {
-            //遍历文件夹
-            DirectoryInfo theFolder = new DirectoryInfo(sSourcePath);
-            FileInfo[] thefileInfo = theFolder.GetFiles("*.*", SearchOption.TopDirectoryOnly);
-            foreach (FileInfo NextFile in thefileInfo)  //遍历文件
-                if (NextFile.FullName.Contains(".avi"))
-                    list.Add(NextFile.FullName);
-
-            //遍历子文件夹
-            DirectoryInfo[] dirInfo = theFolder.GetDirectories();
-            foreach (DirectoryInfo NextFolder in dirInfo)
-            {
-                FindFile1(list, NextFolder.FullName);
-            }
-        }
-
-        /**
-         * 遍历文件夹，查找返回所有avi视频文件
-         */
-        public void FindFile2(Dictionary<string, string> map,string sSourcePath)
-        {
-            //遍历文件夹
-            DirectoryInfo theFolder = new DirectoryInfo(sSourcePath);
-            FileInfo[] thefileInfo = theFolder.GetFiles("*.*", SearchOption.TopDirectoryOnly);
-
-            string lmi1 = "";
-            string avi1 = "";
-            foreach (FileInfo NextFile in thefileInfo)
-            {  //遍历文件
-                string fullName1 = NextFile.FullName;
-                if (fullName1.Contains(".lmi"))
-                {
-                    lmi1 = fullName1;
-                }
-                if (fullName1.Contains(".avi"))
-                {
-                    avi1 = fullName1;
-                }
-            }
-            if ( lmi1 != "" && avi1 != "")
-            {
-                map.Add(lmi1, avi1);
-            }
-
-            //遍历子文件夹
-            DirectoryInfo[] dirInfo = theFolder.GetDirectories();
-            foreach (DirectoryInfo NextFolder in dirInfo)
-            {
-                FindFile2(map, NextFolder.FullName);
-            }
-        }
-
-
-        /**
-         * 遍历文件夹，查找返回所有avi视频文件
-         */
-        public void FindFile3(Dictionary<string, Dictionary<string,string>> map, string sSourcePath, string sSourcePath2)
-        {
-            string path = sSourcePath;
-            if(sSourcePath2 != "")
-            {
-                path = sSourcePath2;
-            }
-            //遍历文件夹下的avi和lmi文件
-            DirectoryInfo theFolder = new DirectoryInfo(path);
-            FileInfo[] thefileInfo = theFolder.GetFiles("*.*", SearchOption.TopDirectoryOnly);
-
-            string lmi1 = "";
-            string avi1 = "";
-            string folder1 = "";
-            foreach (FileInfo NextFile in thefileInfo)
-            {  //遍历文件
-                string fullName1 = NextFile.FullName;
-
-                folder1 = NextFile.DirectoryName.Replace(sSourcePath,"").Substring(1);
-                string[] folder1list = folder1.Split('\\');
-                folder1 = string.Join("/", folder1list); 
-
-                if (fullName1.Contains(".lmi"))
-                {
-                    //string[] lmi1list = fullName1.Split('\\');
-                    //lmi1 = lmi1list[lmi1list.Length - 1];
-                    lmi1 = fullName1;
-                }
-                if (fullName1.Contains(".avi"))
-                {
-                    //string[] avi1List = fullName1.Split('\\');
-                    //avi1 = avi1List[avi1List.Length - 1];
-                    avi1 = fullName1;
-                }
-            }
-            if (folder1 != "" && lmi1 != "" && avi1 != "")
-            {
-                Dictionary<string, string> value1 = new Dictionary<string, string>();
-                value1.Add("lmi", lmi1);
-                value1.Add("avi", avi1);
-                map.Add(folder1, value1);
-            }
-
-            //递归遍历子文件夹
-            DirectoryInfo[] dirInfo = theFolder.GetDirectories();
-            foreach (DirectoryInfo NextFolder in dirInfo)
-            {
-                FindFile3(map, sSourcePath, NextFolder.FullName);
-            }
         }
 
         /**
@@ -231,19 +123,6 @@ namespace WindowsFormsApp1
                 {
                     string folder = this.folderBrowserDialog1.SelectedPath.Trim();
 
-                    //3
-                    //Dictionary<string, Dictionary<string, string>> map = new Dictionary<string, Dictionary<string, string>>();
-                    //this.FindFile3(map, folder, "");
-                    //string jsonData = JsonConvert.SerializeObject(map);//序列化
-
-
-                    //List<String> list = new List<string>();
-                    //this.FindFile1(list, folder);
-                    //string jsonData = JsonConvert.SerializeObject(list);//序列化
-
-                    //Dictionary<string, string> map = new Dictionary<string, string>();
-                    //this.FindFile2(map, folder);
-
                     List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
                     this.FindFile4(list, folder);
 
@@ -263,6 +142,19 @@ namespace WindowsFormsApp1
                 if (this.openFileDialog1.FileName.Trim() != "")
                 {
                     string folder = this.openFileDialog1.FileName.Trim();
+                    return folder;
+                }
+            }
+            return "";
+        }
+
+        public string selectOtherVideo()
+        {
+            if (this.openFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                if (this.openFileDialog2.FileName.Trim() != "")
+                {
+                    string folder = this.openFileDialog2.FileName.Trim();
                     return folder;
                 }
             }

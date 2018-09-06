@@ -1,6 +1,6 @@
-﻿namespace WindowsFormsApp1
+﻿namespace felixyin
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,10 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // webBrowser1
@@ -46,10 +47,14 @@
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "*.xls|*.xlsx";
             // 
-            // Form1
+            // openFileDialog2
+            // 
+            this.openFileDialog2.Filter = "*.avi|*.wmv|*.rm|*.rmvb|*.mpeg1|*.mpeg2|*.mpeg4|*.mp4|*.3gp|*.asf|*.swf|*.vob|*.d" +
+    "at|*.mov|*.m4v|*.flv|*.f4v|*.mkv|*.mts|*.ts";
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -57,8 +62,9 @@
             this.ClientSize = new System.Drawing.Size(1184, 562);
             this.Controls.Add(this.webBrowser1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(1180, 572);
-            this.Name = "Form1";
+            this.MinimumSize = new System.Drawing.Size(1200, 572);
+            this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "图码联侦综合分析系统";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing_1);
             this.ResumeLayout(false);
@@ -70,6 +76,7 @@
         private System.Windows.Forms.WebBrowser webBrowser1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog2;
     }
 }
 
